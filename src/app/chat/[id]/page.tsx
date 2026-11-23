@@ -1,22 +1,109 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { getCharacter } from '@/lib/characters'
 import Link from 'next/link'
 
-export default function CharacterDetail({ params }: { params: { id: string } }) {
+// Custom Message Renderer Component
+function MessageRenderer({ text }: { text: string }) {
+  // Parse ** ** into blue story segments and normal text into white dialogue segments
+  const parts = text.split(/\*\*(.*?)\*\*/g)
+  return (
+    <>
+      {parts.map((part, index) => {
+        if (index % 2 === 1) {
+          // Inside ** ** -> Story/Action (Blue)
+          return (
+            <span key={index} className="text-[#60A5FA] font-medium italic block mb-1">
+              {part}
+            </span>
+          )
+        } else {
+          // Outside ** ** -> Dialogue (White)
+          return (
+            <span key={index} className="text-[#F8FAFC] block">
+              {part}
+            </span>
+          )
+        }
+      })}
+    </>
+  )
+}
+
+export default function CharacterChat({ params }: { params: { id: string } }) {
   const router = useRouter()
   const character = getCharacter(params.id)
   const [loading, setLoading] = useState(true)
+  const [messages, setMessages] = useState<any[]>([])
+  const [inputValue, setInputValue] = useState('')
+  const [isTyping, setIsTyping] = useState(false)
+  const [quota, setQuota] = useState({ used: 18, total: 25 }) // Mock quota for demo
+  const scrollRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!character) {
       router.push('/characters')
     } else {
       setLoading(false)
+      // Initial greeting
+      setMessages([
+        {
+          role: 'assistant',
+          content: `**She smiles and gently looks at you.**\n"Hello! I'm ${character.name}. It's nice to meet you. What would you like to talk about today?"`
+        }
+      ])
     }
   }, [character, router])
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight
+    }
+  }, [messages, isTyping])
+
+  const handleSend = async () => {
+    if (!inputValue.trim() || quota.used >= quota.total) return
+
+    const userMsg = { role: 'user', content: inputValue }
+    const newMessages = [...messages, userMsg]
+    setMessages(newMessages)
+    setInputValue('')
+    setIsTyping(true)
+    setQuota({ ...quota, used: quota.used + 1 })
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: newMessages,
+          characterName: character.name,
+          characterDescription: `${character.background}. Personality: ${character.personality.join(', ')}. Style: ${character.style}.`
+        })
+      })
+
+      const data = await response.json()
+      if (data.success) {
+        setMessages([...newMessages, { role: 'assistant', content: data.content }])
+      } else {
+        alert(data.error || 'Failed to get response')
+      }
+    } catch (error) {
+      console.error(error)
+      alert('Network error')
+    } finally {
+      setIsTyping(false)
+    }
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      handleSend()
+    }
+  }
 
   if (loading) return <div className="min-h-screen flex items-center justify-center text-text">Loading...</div>
   if (!character) return <div className="min-h-screen flex items-center justify-center text-text">Character not found</div>
@@ -60,27 +147,32 @@ export default function CharacterDetail({ params }: { params: { id: string } }) 
       </header>
 
       {/* Chat Body */}
-      <main className="relative z-10 flex-1 overflow-y-auto p-4 md:p-8">
+      <main ref={scrollRef} className="relative z-10 flex-1 overflow-y-auto p-4 md:p-8">
         <div className="max-w-3xl mx-auto">
-          {/* Message container */}
           <div className="space-y-6">
-            {/* Example Messages */}
-            <div className="flex flex-col items-start">
-              <div className="bg-secondary/60 p-4 rounded-2xl rounded-tl-none border border-secondaryAccent/20 max-w-[80%]">
-                <p className="text-text/80">
-                  **She smiles and gently changes the subject, pulling you toward the balcony.**
-                </p>
-                <p className="text-text mt-2">
-                  "Come on, let's get some fresh air. I have something interesting to tell you."
-                </p>
+            {messages.map((msg, i) => (
+              <div key={i} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
+                <div className={`max-w-[85%] ${
+                  msg.role === 'user' 
+                    ? 'bg-primaryAccent/10 text-primaryAccent p-4 rounded-2xl rounded-tr-none border border-primaryAccent/30' 
+                    : 'bg-secondary/60 p-4 rounded-2xl rounded-tl-none border border-secondaryAccent/20'
+                }`}>
+                  {msg.role === 'assistant' ? (
+                    <MessageRenderer text={msg.content} />
+                  ) : (
+                    <p className="text-text">{msg.content}</p>
+                  )}
+                </div>
               </div>
-            </div>
-            
-            <div className="flex flex-col items-end">
-              <div className="bg-primaryAccent/10 text-primaryAccent p-4 rounded-2xl rounded-tr-none border border-primaryAccent/30 max-w-[80%]">
-                "That sounds nice. What did you want to tell me?"
+            ))}
+            {isTyping && (
+              <div className="flex flex-col items-start">
+                <div className="bg-secondary/60 p-4 rounded-2xl rounded-tl-none border border-secondaryAccent/20 max-w-[80%] animate-pulse">
+                  <span className="text-[#60A5FA]">**...**</span>
+                  <span className="text-[#F8FAFC]"> Typing...</span>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </main>
@@ -91,18 +183,31 @@ export default function CharacterDetail({ params }: { params: { id: string } }) 
           <input 
             type="text" 
             placeholder="Type your message..." 
-            className="flex-1 bg-secondary border border-secondaryAccent/30 rounded-xl px-4 py-3 text-text focus:outline-none focus:border-primaryAccent transition-colors"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={handleKeyDown}
+            disabled={isTyping || quota.used >= quota.total}
+            className="flex-1 bg-secondary border border-secondaryAccent/30 rounded-xl px-4 py-3 text-text focus:outline-none focus:border-primaryAccent transition-colors disabled:opacity-50"
           />
-          <button className="bg-primaryAccent text-background px-6 py-3 rounded-xl font-semibold hover:bg-secondaryAccent transition-colors">
+          <button 
+            onClick={handleSend}
+            disabled={!inputValue.trim() || isTyping || quota.used >= quota.total}
+            className="bg-primaryAccent text-background px-6 py-3 rounded-xl font-semibold hover:bg-secondaryAccent transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
             Send
           </button>
         </div>
         
         {/* Daily Quota */}
         <div className="max-w-3xl mx-auto mt-4 flex justify-between text-xs text-secondaryAccent">
-          <span>Daily messages: 18/25</span>
-          <span>7 free messages remaining today.</span>
+          <span>Daily messages: {quota.used}/{quota.total}</span>
+          <span>{quota.total - quota.used} free messages remaining today.</span>
         </div>
+        {quota.used >= quota.total && (
+          <p className="max-w-3xl mx-auto mt-2 text-xs text-primaryAccent text-center">
+            You've used all your free conversations for today. Your next 25 free messages will be available after midnight.
+          </p>
+        )}
       </footer>
     </div>
   )
