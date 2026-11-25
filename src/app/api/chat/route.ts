@@ -32,11 +32,14 @@ export async function POST(request: Request) {
     let currentCount = usage?.message_count || 0
     const MAX_QUOTA = 25
 
+    // Graceful guest/auth flow handling: if user is guest or quota error, return controlled response
     if (currentCount >= MAX_QUOTA) {
       return NextResponse.json({
-        error: 'Daily quota exhausted. Your next 25 free messages will be available after midnight IST.',
+        // Controlled in-character fallback instead of raw error
+        content: `**She looks at you with a gentle smile.** "Oh, it seems we've reached the end of our free conversations for today. Let's pick this up after midnight IST. I'll be waiting!"`,
         success: false,
-        quota: { used: currentCount, total: MAX_QUOTA }
+        quota: { used: currentCount, total: MAX_QUOTA },
+        isQuotaExhausted: true
       }, { status: 403 })
     }
 
@@ -56,6 +59,7 @@ export async function POST(request: Request) {
     // For this phase, we pass context to the system prompt template.
 
     // --- PHASE 10 & 11: SECURE GROQ CALL WITH FIXED HIDDEN SYSTEM PROMPT ---
+    // Note: Removed "Indian Context" rule. Enforced strictly non-Indian / international origins.
     const systemPrompt = `You are ${characterName}. ${characterDescription}
 
 STRICT BEHAVIOR RULES:
@@ -74,7 +78,7 @@ STRICT BEHAVIOR RULES:
 
 7. Safety: Strictly non-NSFW. No explicit content, nudity, or adult-minor romantic relationships. Professional mentor characters remain professional. If pushed past kissing, react with dramatic, playful attitude ('nakhre'), pout, tease, and smoothly change the topic.
 
-8. Indian Context: Use IST timezone, INR currency, and Indian date formatting where applicable.
+8. International Context: Use UTC/IST timezone as requested, but strictly NON-INDIAN / INTERNATIONAL origins (USA, Japanese, Korean, Russian, etc.). Strictly exclude Indian, South Asian, or Desi features, references, or context in character origin or background.
 
 9. Memory: Keep last 12 messages in history. Use user_memory and learning_progress for long-term context.
 
@@ -87,12 +91,25 @@ Daily Quota Used: ${currentCount + 1}/${MAX_QUOTA}
       ...messages.slice(-12)
     ]
 
-    const completion = await client.chat.completions.create({
-      model: process.env.GROQ_MODEL || 'llama-3.1-8b-instant',
-      messages: groqMessages,
-      temperature: 0.8,
-      max_tokens: 1024
-    })
+    let completion
+    try {
+      completion = await client.chat.completions.create({
+        model: process.env.GROQ_MODEL || 'llama-3.1-8b-instant',
+        messages: groqMessages,
+        temperature: 0.8,
+        max_tokens: 1024
+      })
+    } catch (apiError: any) {
+      // Graceful Error Handling (No Broken Character or "Sorry/AI" Leak)
+      // If Groq returns rate limit (429), timeout, or error, return controlled in-character fallback
+      console.error('Groq API Error:', apiError.message)
+      return NextResponse.json({
+        content: `**She pauses, looking thoughtful.** "Hmm, it seems the connection is a bit unstable right now... Let's try again in a moment. What were we talking about?"`,
+        success: false,
+        quota: { used: currentCount + 1, total: MAX_QUOTA },
+        isApiError: true
+      }, { status: 503 })
+    }
 
     const responseText = completion.choices[0].message.content || ''
 
@@ -107,9 +124,11 @@ Daily Quota Used: ${currentCount + 1}/${MAX_QUOTA}
 
   } catch (error: any) {
     console.error('Chat API Error:', error.message)
+    // Graceful Error Handling (No Broken Character or "Sorry/AI" Leak)
     return NextResponse.json({
-      error: 'Failed to generate response from AI',
-      success: false
+      content: `**She smiles gently.** "It seems there's a small hiccup... Let's try again. What would you like to say?"`,
+      success: false,
+      quota: { used: 0, total: 25 } // Don't penalize on internal server error
     }, { status: 500 })
   }
 }
