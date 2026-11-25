@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'AI Companion Universe',
-  description: 'Your Stories. Your Characters. Your World.',
+  title: 'AI Companion Universe - International Fictional Platform',
+  description: 'Immersive fictional roleplay with international characters (USA, Japanese, Korean, Russian). 25 free messages daily. Crypto-friendly subscription options coming soon.',
 }
 
 export default function RootLayout({
@@ -12,7 +12,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="bg-background text-text antialiased min-h-screen font-sans">
+      <body className="bg-[#101014] text-[#F8FAFC] antialiased min-h-screen font-sans">
         {children}
       </body>
     </html>
