@@ -12,12 +12,14 @@ function MessageRenderer({ text }: { text: string }) {
     <>
       {parts.map((part, index) => {
         if (index % 2 === 1) {
+          // Story/Action -> BLUE (#60A5FA) with glow
           return (
-            <span key={index} className="text-[#60A5FA] font-medium italic block mb-1">
+            <span key={index} className="text-[#60A5FA] font-medium italic block mb-1 drop-shadow-[0_0_5px_rgba(96,165,250,0.5)]">
               {part}
             </span>
           )
         } else {
+          // Dialogue -> WHITE (#F8FAFC)
           return (
             <span key={index} className="text-[#F8FAFC] block">
               {part}
@@ -118,10 +120,11 @@ export default function CharacterChat({ params }: { params: { id: string } }) {
 
   if (loading) return <div className="min-h-screen flex items-center justify-center text-text">Loading...</div>
   if (!character) return <div className="min-h-screen flex items-center justify-center text-text">Character not found</div>
-  if (!session) return <div className="min-h-screen flex flex-col items-center justify-center text-text p-4"><p>Please login first</p><Link href="/login" className="text-primaryAccent mt-4">Login</Link></div>
+  if (!session) return <div className="min-h-screen flex flex-col items-center justify-center text-text p-4"><p>Please login first</p><Link href="/login" className="text-[#06B6D4] hover:text-[#8B5CF6] transition-colors mt-4">Login</Link></div>
 
   return (
     <div className="min-h-screen relative flex flex-col overflow-hidden">
+      {/* Character Background */}
       <div 
         className="absolute inset-0 z-0"
         style={{
@@ -131,31 +134,36 @@ export default function CharacterChat({ params }: { params: { id: string } }) {
           backgroundAttachment: 'fixed',
         }}
       >
-        <div className="absolute inset-0 bg-gradient-to-b from-background/90 via-background/60 to-background/90" />
+        {/* Vibrant Gradient Overlay for Readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#101014]/95 via-[#101014]/40 to-[#101014]/95" />
+        {/* Subtle Glow Border around chat area */}
+        <div className="absolute inset-0 pointer-events-none border-[20px] border-transparent hover:border-[#8B5CF6]/10 transition-colors" />
       </div>
 
-      <header className="relative z-10 flex items-center justify-between p-4 bg-background/50 backdrop-blur-md border-b border-secondaryAccent/20">
+      {/* Header */}
+      <header className="relative z-10 flex items-center justify-between p-4 bg-[#191923]/80 backdrop-blur-md border-b border-[#06B6D4]/30 glow-border-cyan">
         <div className="flex items-center gap-4">
-          <Link href="/characters" className="text-secondaryAccent hover:text-primaryAccent transition-colors">
+          <Link href="/characters" className="text-[#06B6D4] hover:text-[#8B5CF6] transition-colors font-medium">
             ← Back
           </Link>
           <img 
             src={character.portraitPath} 
             alt={character.name} 
-            className="w-10 h-10 rounded-full border border-secondaryAccent/50 object-cover"
+            className="w-10 h-10 rounded-full border border-[#06B6D4]/50 object-cover glow-border-cyan"
           />
           <div>
-            <h1 className="text-xl font-bold text-primaryAccent">{character.name}</h1>
-            <p className="text-xs text-secondaryAccent">{character.role} • Online</p>
+            <h1 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#8B5CF6] via-[#06B6D4] to-[#EC4899]">{character.name}</h1>
+            <p className="text-xs text-[#06B6D4] font-medium">{character.role} • Online</p>
           </div>
         </div>
         <div className="flex gap-2">
-          <button className="p-2 text-secondaryAccent hover:text-primaryAccent transition-colors">
+          <button className="p-2 text-[#06B6D4] hover:text-[#8B5CF6] transition-colors">
             ⋮
           </button>
         </div>
       </header>
 
+      {/* Chat Body */}
       <main ref={scrollRef} className="relative z-10 flex-1 overflow-y-auto p-4 md:p-8">
         <div className="max-w-3xl mx-auto">
           <div className="space-y-6">
@@ -163,21 +171,21 @@ export default function CharacterChat({ params }: { params: { id: string } }) {
               <div key={i} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
                 <div className={`max-w-[85%] ${
                   msg.role === 'user' 
-                    ? 'bg-primaryAccent/10 text-primaryAccent p-4 rounded-2xl rounded-tr-none border border-primaryAccent/30' 
-                    : 'bg-secondary/60 p-4 rounded-2xl rounded-tl-none border border-secondaryAccent/20'
+                    ? 'bg-[#8B5CF6]/10 text-[#8B5CF6] p-4 rounded-2xl rounded-tr-none border border-[#8B5CF6]/30 glow-border' 
+                    : 'bg-[#191923]/60 p-4 rounded-2xl rounded-tl-none border border-[#06B6D4]/30 glow-border-cyan'
                 }`}>
                   {msg.role === 'assistant' ? (
                     <MessageRenderer text={msg.content} />
                   ) : (
-                    <p className="text-text">{msg.content}</p>
+                    <p className="text-[#F8FAFC]">{msg.content}</p>
                   )}
                 </div>
               </div>
             ))}
             {isTyping && (
               <div className="flex flex-col items-start">
-                <div className="bg-secondary/60 p-4 rounded-2xl rounded-tl-none border border-secondaryAccent/20 max-w-[80%] animate-pulse">
-                  <span className="text-[#60A5FA]">**...**</span>
+                <div className="bg-[#191923]/60 p-4 rounded-2xl rounded-tl-none border border-[#06B6D4]/30 glow-border-cyan max-w-[80%] animate-pulse">
+                  <span className="text-[#60A5FA] font-medium">**...**</span>
                   <span className="text-[#F8FAFC]"> Typing...</span>
                 </div>
               </div>
@@ -186,7 +194,8 @@ export default function CharacterChat({ params }: { params: { id: string } }) {
         </div>
       </main>
 
-      <footer className="relative z-10 p-4 bg-background/80 backdrop-blur-md border-t border-secondaryAccent/20">
+      {/* Input Area */}
+      <footer className="relative z-10 p-4 bg-[#191923]/90 backdrop-blur-md border-t border-[#06B6D4]/30 glow-border-cyan">
         <div className="max-w-3xl mx-auto flex gap-2">
           <input 
             type="text" 
@@ -195,23 +204,24 @@ export default function CharacterChat({ params }: { params: { id: string } }) {
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={handleKeyDown}
             disabled={isTyping || quota.used >= quota.total}
-            className="flex-1 bg-secondary border border-secondaryAccent/30 rounded-xl px-4 py-3 text-text focus:outline-none focus:border-primaryAccent transition-colors disabled:opacity-50"
+            className="flex-1 bg-[#101014] border border-[#06B6D4]/30 rounded-xl px-4 py-3 text-[#F8FAFC] focus:outline-none focus:border-[#8B5CF6] transition-colors disabled:opacity-50 glow-border-cyan"
           />
           <button 
             onClick={handleSend}
             disabled={!inputValue.trim() || isTyping || quota.used >= quota.total}
-            className="bg-primaryAccent text-background px-6 py-3 rounded-xl font-semibold hover:bg-secondaryAccent transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="bg-gradient-to-r from-[#8B5CF6] via-[#06B6D4] to-[#EC4899] text-[#101014] px-6 py-3 rounded-xl font-semibold hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_15px_rgba(139,92,246,0.4)] glow-border"
           >
             Send
           </button>
         </div>
         
-        <div className="max-w-3xl mx-auto mt-4 flex justify-between text-xs text-secondaryAccent">
+        {/* Daily Quota */}
+        <div className="max-w-3xl mx-auto mt-4 flex justify-between text-xs text-[#06B6D4]">
           <span>Daily messages: {quota.used}/{quota.total}</span>
           <span>{quota.total - quota.used} free messages remaining today.</span>
         </div>
         {quota.used >= quota.total && (
-          <p className="max-w-3xl mx-auto mt-2 text-xs text-primaryAccent text-center">
+          <p className="max-w-3xl mx-auto mt-2 text-xs text-[#EC4899] text-center font-medium">
             You've used all your free conversations for today. Your next 25 free messages will be available after midnight IST.
           </p>
         )}
