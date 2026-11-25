@@ -3,24 +3,21 @@
 import { useState, useEffect, useRef } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { getCharacter } from '@/lib/characters'
+import { supabase } from '@/lib/supabase/client'
 import Link from 'next/link'
 
-// Custom Message Renderer Component
 function MessageRenderer({ text }: { text: string }) {
-  // Parse ** ** into blue story segments and normal text into white dialogue segments
   const parts = text.split(/\*\*(.*?)\*\*/g)
   return (
     <>
       {parts.map((part, index) => {
         if (index % 2 === 1) {
-          // Inside ** ** -> Story/Action (Blue)
           return (
             <span key={index} className="text-[#60A5FA] font-medium italic block mb-1">
               {part}
             </span>
           )
         } else {
-          // Outside ** ** -> Dialogue (White)
           return (
             <span key={index} className="text-[#F8FAFC] block">
               {part}
@@ -39,10 +36,14 @@ export default function CharacterChat({ params }: { params: { id: string } }) {
   const [messages, setMessages] = useState<any[]>([])
   const [inputValue, setInputValue] = useState('')
   const [isTyping, setIsTyping] = useState(false)
-  const [quota, setQuota] = useState({ used: 18, total: 25 }) // Mock quota for demo
+  const [quota, setQuota] = useState({ used: 0, total: 25 })
+  const [session, setSession] = useState<any>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    const { data: authSession } = supabase.auth.getSession()
+    setSession(authSession.data.session)
+
     if (!character) {
       router.push('/characters')
     } else {
@@ -55,6 +56,12 @@ export default function CharacterChat({ params }: { params: { id: string } }) {
         }
       ])
     }
+
+    const subscription = supabase.auth.onAuthStateChange((_event, newSession) => {
+      setSession(newSession)
+    }).data.subscription
+
+    return () => subscription.unsubscribe()
   }, [character, router])
 
   useEffect(() => {
@@ -64,29 +71,33 @@ export default function CharacterChat({ params }: { params: { id: string } }) {
   }, [messages, isTyping])
 
   const handleSend = async () => {
-    if (!inputValue.trim() || quota.used >= quota.total) return
+    if (!inputValue.trim() || !session || quota.used >= quota.total) return
 
     const userMsg = { role: 'user', content: inputValue }
     const newMessages = [...messages, userMsg]
     setMessages(newMessages)
     setInputValue('')
     setIsTyping(true)
-    setQuota({ ...quota, used: quota.used + 1 })
 
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
+        },
         body: JSON.stringify({
           messages: newMessages,
           characterName: character.name,
-          characterDescription: `${character.background}. Personality: ${character.personality.join(', ')}. Style: ${character.style}.`
+          characterDescription: `${character.background}. Personality: ${character.personality.join(', ')}. Style: ${character.style}.`,
+          userId: session.user.id
         })
       })
 
       const data = await response.json()
       if (data.success) {
         setMessages([...newMessages, { role: 'assistant', content: data.content }])
+        setQuota(data.quota)
       } else {
         alert(data.error || 'Failed to get response')
       }
@@ -107,10 +118,10 @@ export default function CharacterChat({ params }: { params: { id: string } }) {
 
   if (loading) return <div className="min-h-screen flex items-center justify-center text-text">Loading...</div>
   if (!character) return <div className="min-h-screen flex items-center justify-center text-text">Character not found</div>
+  if (!session) return <div className="min-h-screen flex flex-col items-center justify-center text-text p-4"><p>Please login first</p><Link href="/login" className="text-primaryAccent mt-4">Login</Link></div>
 
   return (
     <div className="min-h-screen relative flex flex-col overflow-hidden">
-      {/* Character Background */}
       <div 
         className="absolute inset-0 z-0"
         style={{
@@ -123,7 +134,6 @@ export default function CharacterChat({ params }: { params: { id: string } }) {
         <div className="absolute inset-0 bg-gradient-to-b from-background/90 via-background/60 to-background/90" />
       </div>
 
-      {/* Header */}
       <header className="relative z-10 flex items-center justify-between p-4 bg-background/50 backdrop-blur-md border-b border-secondaryAccent/20">
         <div className="flex items-center gap-4">
           <Link href="/characters" className="text-secondaryAccent hover:text-primaryAccent transition-colors">
@@ -146,7 +156,6 @@ export default function CharacterChat({ params }: { params: { id: string } }) {
         </div>
       </header>
 
-      {/* Chat Body */}
       <main ref={scrollRef} className="relative z-10 flex-1 overflow-y-auto p-4 md:p-8">
         <div className="max-w-3xl mx-auto">
           <div className="space-y-6">
@@ -177,7 +186,6 @@ export default function CharacterChat({ params }: { params: { id: string } }) {
         </div>
       </main>
 
-      {/* Input Area */}
       <footer className="relative z-10 p-4 bg-background/80 backdrop-blur-md border-t border-secondaryAccent/20">
         <div className="max-w-3xl mx-auto flex gap-2">
           <input 
@@ -198,14 +206,13 @@ export default function CharacterChat({ params }: { params: { id: string } }) {
           </button>
         </div>
         
-        {/* Daily Quota */}
         <div className="max-w-3xl mx-auto mt-4 flex justify-between text-xs text-secondaryAccent">
           <span>Daily messages: {quota.used}/{quota.total}</span>
           <span>{quota.total - quota.used} free messages remaining today.</span>
         </div>
         {quota.used >= quota.total && (
           <p className="max-w-3xl mx-auto mt-2 text-xs text-primaryAccent text-center">
-            You've used all your free conversations for today. Your next 25 free messages will be available after midnight.
+            You've used all your free conversations for today. Your next 25 free messages will be available after midnight IST.
           </p>
         )}
       </footer>
