@@ -4,9 +4,9 @@ import Link from 'next/link'
 export default function LandingPage() {
   return (
     <>
-      <main className="min-h-screen flex flex-col">
+      <main className="min-h-screen-dark flex flex-col">
         {/* Hero Section - VIBRANT UPGRADE */}
-        <section className="relative h-screen flex flex-col items-center justify-center text-center p-4 overflow-hidden">
+        <section className="relative h-screen flex flex-col items-center justify-center text-center p-4 overflow-hidden surface-dark">
           <div className="absolute inset-0 bg-gradient-to-br from-[#101014] via-[#191923] to-[#0f0a1a] opacity-90" />
           {/* Vibrant Glow Background */}
           <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#8B5CF6]/20 rounded-full blur-[120px]" />
@@ -32,7 +32,7 @@ export default function LandingPage() {
         </section>
 
         {/* Featured Characters - VIBRANT CARDS */}
-        <section className="py-20 px-4 bg-[#191923]">
+        <section className="py-20 px-4 surface-dark">
           <div className="max-w-6xl mx-auto">
             <h2 className="text-4xl font-bold text-[#F8FAFC] text-center mb-12 drop-shadow-[0_0_12px_rgba(248,250,252,0.5)]">
               Featured Companions
@@ -49,9 +49,11 @@ export default function LandingPage() {
                   className="group relative block rounded-xl overflow-hidden border border-[#8B5CF6]/30 bg-[#191923] hover:border-[#06B6D4]/50 transition-colors duration-300 glow-border"
                 >
                   <div className="absolute inset-0 bg-gradient-to-t from-[#191923]/90 via-[#191923]/40 to-transparent" />
-                  <img
+                  <Image
                     src={char.image}
                     alt={char.name}
+                    width={400}
+                    height={256}
                     className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="p-5 relative z-10">
@@ -72,7 +74,7 @@ export default function LandingPage() {
         </section>
 
         {/* How It Works */}
-        <section className="py-20 px-4 bg-[#101014]">
+        <section className="py-20 px-4 surface-dark">
           <div className="max-w-6xl mx-auto">
             <h2 className="text-4xl font-bold text-[#F8FAFC] text-center mb-12 drop-shadow-[0_0_12px_rgba(248,250,252,0.5)]">
               How It Works
@@ -108,7 +110,7 @@ export default function LandingPage() {
         </section>
 
         {/* Footer */}
-        <footer className="bg-[#101014] border-t border-[#06B6D4]/20 p-8 text-[#F8FAFC]/60 text-center text-sm">
+        <footer className="bg-[#101014] border-t border-[#06B6D4]/30 p-8 text-[#F8FAFC]/60 text-center text-sm">
           <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
             <p>© 2026 AI Companion Universe. International Market (USA, Europe, Crypto-Friendly)</p>
             <div className="flex gap-6">

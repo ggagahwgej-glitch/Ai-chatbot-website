@@ -1,8 +1,9 @@
 import type { Metadata } from 'next'
+import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'AI Companion Universe - International Fictional Platform',
-  description: 'Immersive fictional roleplay with international characters (USA, Japanese, Korean, Russian). 25 free messages daily. Crypto-friendly subscription options coming soon.',
+  title: 'AI Companion Universe | International & Crypto',
+  description: 'Meet fascinating fictional AI companions from USA, Japan, Korea, and Russia. Immersive chat, stealth learning, and international crypto plans.',
 }
 
 export default function RootLayout({
@@ -11,8 +12,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body className="bg-[#101014] text-[#F8FAFC] antialiased min-h-screen font-sans">
+    <html lang="en" className="min-h-screen-dark">
+      <body className="min-h-screen-dark font-sans">
         {children}
       </body>
     </html>

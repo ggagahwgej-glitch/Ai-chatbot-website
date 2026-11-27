@@ -2,56 +2,79 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  background-color: #101014;
-  color: #F8FAFC;
-}
-
-/* VIBRANT COLOR PALETTE UPGRADE */
-:root {
-  --primary-accent: #8B5CF6; /* Violet */
-  --secondary-accent: #06B6D4; /* Cyan */
-  --tertiary-accent: #EC4899; /* Rose/Magenta */
-  --bg-dark: #101014;
-  --bg-secondary: #191923;
-  --text-main: #F8FAFC;
-}
-
-/* Vibrant Glows and Gradients */
-.vibrant-gradient {
-  background: linear-gradient(135deg, var(--primary-accent) 0%, var(--secondary-accent) 50%, var(--tertiary-accent) 100%);
-}
-
-.glow-border {
-  box-shadow: 0 0 15px rgba(139, 92, 246, 0.3), inset 0 0 10px rgba(139, 92, 246, 0.1);
-  border: 1px solid rgba(139, 92, 246, 0.5);
-}
-
-.glow-border-cyan {
-  box-shadow: 0 0 15px rgba(6, 182, 212, 0.3), inset 0 0 10px rgba(6, 182, 212, 0.1);
-  border: 1px solid rgba(6, 182, 212, 0.5);
-}
-
-.glow-border-rose {
-  box-shadow: 0 0 15px rgba(236, 72, 153, 0.3), inset 0 0 10px rgba(236, 72, 153, 0.1);
-  border: 1px solid rgba(236, 72, 153, 0.5);
-}
-
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-}
-::-webkit-scrollbar-track {
-  background: var(--bg-secondary);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--primary-accent);
-  border-radius: 3px;
-}
-
-/* Mobile optimization */
-@media (max-width: 768px) {
-  body {
-    font-size: 16px;
+@layer base {
+  html {
+    background-color: #101014;
+    color: #F8FAFC;
+    font-family: system-ui, -apple-system, sans-serif;
   }
+  body {
+    background-color: #101014;
+    color: #F8FAFC;
+  }
+}
+
+@layer components {
+  .glow-border {
+    border-color: rgba(139, 92, 246, 0.3);
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.5);
+  }
+  .glow-border-cyan {
+    border-color: rgba(6, 182, 212, 0.3);
+    box-shadow: 0 0 15px rgba(6, 182, 212, 0.5);
+  }
+  .glow-border-rose {
+    border-color: rgba(236, 72, 153, 0.3);
+    box-shadow: 0 0 15px rgba(236, 72, 153, 0.5);
+  }
+  .text-action {
+    color: #60A5FA;
+  }
+  .bg-action {
+    background-color: #60A5FA;
+  }
+  .text-text {
+    color: #F8FAFC;
+  }
+  .bg-background {
+    background-color: #101014;
+  }
+  .bg-surface {
+    background-color: #191923;
+  }
+}
+
+/* Ensure Tailwind builds all classes used in dynamic strings or components */
+.story-action { @apply text-action font-bold; }
+.dialogue { @apply text-text; }
+.min-h-screen-dark { @apply min-h-screen bg-background text-text; }
+.surface-dark { @apply bg-surface text-text; }
+
+/* Global reset for production build to prevent raw HTML rendering */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Link styling to prevent blue underlined default */
+a {
+  text-decoration: none;
+  color: inherit;
+  transition: color 0.3s ease;
+}
+a:hover {
+  color: #60A5FA;
+}
+
+/* Prevent jammed text/buttons */
+.flex-col, .flex-row, .grid {
+  display: flex;
+  gap: 1rem;
+}
+
+/* Ensure images are responsive */
+img {
+  max-width: 100%;
+  height: auto;
 }
