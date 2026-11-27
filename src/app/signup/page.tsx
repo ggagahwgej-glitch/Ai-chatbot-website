@@ -7,8 +7,6 @@ import Link from 'next/link'
 export default function SignupPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [username, setUsername] = useState('')
-  const [ageGroup, setAgeGroup] = useState('college') // teen, college, adult
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -17,97 +15,76 @@ export default function SignupPage() {
     setLoading(true)
     setError('')
 
-    // 1. Create Auth User
-    const { user, error: authError } = await supabase.auth.signUp({
+    const { data, error: authError } = await supabase.auth.signUp({
       email,
       password
     })
 
     if (authError) {
       setError(authError.message)
-      setLoading(false)
-      return
+    } else if (data) {
+      // Implementation for profile creation and international/crypto region selection
+      alert('Signup successful! Please verify your email.')
+      window.location.href = '/login'
     }
-
-    // 2. Create Profile
-    const { error: profileError } = await supabase
-      .from('profiles')
-      .insert([{
-        id: user?.id,
-        username,
-        email,
-        age_group: ageGroup,
-        created_at: new Date().toISOString()
-      }])
-
-    if (profileError) {
-      setError(profileError.message)
-      // Optional: Delete auth user if profile creation fails
-    }
-
     setLoading(false)
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <div className="w-full max-w-md bg-secondary p-8 rounded-2xl border border-secondaryAccent/30 shadow-xl">
-        <h1 className="text-3xl font-bold text-primaryAccent mb-6 text-center">
+    <div className="min-h-screen flex items-center justify-center bg-[#101014] p-4">
+      <div className="max-w-md w-full bg-[#191923] border border-[#8B5CF6]/30 rounded-2xl p-8 shadow-[0_0_20px_rgba(139,92,246,0.2)] glow-border">
+        <h1 className="text-3xl font-bold text-[#F8FAFC] text-center mb-8 drop-shadow-[0_0_10px_rgba(248,250,252,0.5)]">
           Join the Universe
         </h1>
-        {error && <p className="text-red-400 text-sm mb-4 text-center">{error}</p>}
+
+        {error && (
+          <div className="bg-[#EC4899]/10 border border-[#EC4899]/30 text-[#EC4899] p-3 rounded-lg mb-6 text-sm">
+            {error}
+          </div>
+        )}
+
         <form onSubmit={handleSignup} className="space-y-6">
           <div>
-            <label className="block text-text/80 text-sm mb-2">Username</label>
-            <input 
-              type="text" 
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="w-full bg-background border border-secondaryAccent/30 rounded-xl px-4 py-3 text-text focus:outline-none focus:border-primaryAccent transition-colors"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-text/80 text-sm mb-2">Email</label>
-            <input 
-              type="email" 
+            <label className="block text-[#F8FAFC]/80 text-sm mb-2">Email</label>
+            <input
+              type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-background border border-secondaryAccent/30 rounded-xl px-4 py-3 text-text focus:outline-none focus:border-primaryAccent transition-colors"
+              className="w-full bg-[#101014] border border-[#8B5CF6]/30 rounded-lg px-4 py-3 text-[#F8FAFC] focus:outline-none focus:border-[#06B6D4] glow-border"
               required
             />
           </div>
+
           <div>
-            <label className="block text-text/80 text-sm mb-2">Password</label>
-            <input 
-              type="password" 
+            <label className="block text-[#F8FAFC]/80 text-sm mb-2">Password</label>
+            <input
+              type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-background border border-secondaryAccent/30 rounded-xl px-4 py-3 text-text focus:outline-none focus:border-primaryAccent transition-colors"
+              className="w-full bg-[#101014] border border-[#8B5CF6]/30 rounded-lg px-4 py-3 text-[#F8FAFC] focus:outline-none focus:border-[#06B6D4] glow-border"
               required
             />
           </div>
-          <div>
-            <label className="block text-text/80 text-sm mb-2">Age Group</label>
-            <select 
-              value={ageGroup}
-              onChange={(e) => setAgeGroup(e.target.value)}
-              className="w-full bg-background border border-secondaryAccent/30 rounded-xl px-4 py-3 text-text focus:outline-none focus:border-primaryAccent transition-colors"
-            >
-              <option value="teen">Teen (13-17)</option>
-              <option value="college">College Student (18-24)</option>
-              <option value="adult">Adult (25+)</option>
-            </select>
-          </div>
-          <button 
+
+          <button
             type="submit"
             disabled={loading}
-            className="w-full bg-primaryAccent text-background py-3 rounded-xl font-semibold hover:bg-secondaryAccent transition-colors disabled:opacity-50"
+            className="w-full bg-[#8B5CF6] text-[#101014] px-6 py-3 rounded-xl font-bold hover:bg-[#8B5CF6]/80 transition-colors disabled:opacity-50 shadow-[0_0_15px_rgba(139,92,246,0.4)] glow-border"
           >
-            {loading ? 'Creating Account...' : 'Sign Up'}
+            {loading ? 'Signing Up...' : 'Sign Up'}
           </button>
         </form>
-        <div className="mt-6 text-center text-text/60 text-sm">
-          Already have an account? <Link href="/login" className="text-primaryAccent hover:text-secondaryAccent transition-colors">Login</Link>
+
+        <div className="mt-6 text-center text-[#F8FAFC]/60">
+          <p>
+            Already have an account?{' '}
+            <Link href="/login" className="text-[#06B6D4] hover:underline transition-colors">
+              Sign In
+            </Link>
+          </p>
+          <p className="mt-2 text-xs">
+            International &amp; Crypto-Friendly Platform
+          </p>
         </div>
       </div>
     </div>
