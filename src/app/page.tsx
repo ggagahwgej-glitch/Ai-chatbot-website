@@ -3,38 +3,122 @@ import Link from 'next/link'
 
 export default function LandingPage() {
   return (
-    <main className="min-h-screen flex flex-col">
-      {/* Hero Section - VIBRANT UPGRADE */}
-      <section className="relative h-screen flex flex-col items-center justify-center text-center p-4 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#101014] via-[#191923] to-[#0f0a1a] opacity-90" />
-        {/* Vibrant Glow Background */}
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#8B5CF6]/20 rounded-full blur-[120px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#EC4899]/20 rounded-full blur-[120px]" />
-        <div className="absolute top-1/4 right-1/4 w-[30%] h-[30%] bg-[#06B6D4]/20 rounded-full blur-[100px]" />
+    <>
+      <main className="min-h-screen flex flex-col">
+        {/* Hero Section - VIBRANT UPGRADE */}
+        <section className="relative h-screen flex flex-col items-center justify-center text-center p-4 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#101014] via-[#191923] to-[#0f0a1a] opacity-90" />
+          {/* Vibrant Glow Background */}
+          <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#8B5CF6]/20 rounded-full blur-[120px]" />
+          <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#EC4899]/20 rounded-full blur-[120px]" />
+          <div className="absolute top-1/4 right-1/4 w-[30%] h-[30%] bg-[#06B6D4]/20 rounded-full blur-[100px]" />
+          
+          <div className="relative z-10 max-w-4xl">
+            <h1 className="text-5xl md:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#8B5CF6] via-[#06B6D4] to-[#EC4899] mb-6 drop-shadow-[0_0_15px_rgba(139,92,246,0.5)]">
+              Your Stories. Your Characters. Your World.
+            </h1>
+            <p className="text-xl md:text-2xl text-[#F8FAFC] mb-10 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
+              Meet fascinating fictional AI companions from USA, Japan, Korea, and Russia. Explore immersive conversations and discover something new every day.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/characters" className="inline-block bg-gradient-to-r from-[#8B5CF6] via-[#06B6D4] to-[#EC4899] text-[#101014] px-10 py-4 rounded-full text-lg font-semibold hover:scale-105 transition-all duration-300 shadow-[0_0_20px_rgba(139,92,246,0.4)] glow-border">
+                Meet Your Companion
+              </Link>
+              <Link href="/subscription" className="inline-block bg-[#191923] border border-[#06B6D4]/30 text-[#F8FAFC] px-10 py-4 rounded-full text-lg font-semibold hover:bg-[#06B6D4]/10 transition-all duration-300 glow-border-cyan">
+                Subscription & Crypto Plans
+              </Link>
+            </div>
+          </div>
+        </section>
 
-        <div className="relative z-10 max-w-4xl">
-          <h1 className="text-5xl md:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#8B5CF6] via-[#06B6D4] to-[#EC4899] mb-6 drop-shadow-[0_0_15px_rgba(139,92,246,0.5)]">
-            Your Stories. Your Characters. Your World.
-          </h1>
-          <p className="text-xl md:text-2xl text-[#F8FAFC] mb-10 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
-            Meet fascinating fictional AI companions from USA, Japan, Korea, and Russia. Explore immersive conversations and discover something new every day.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/characters" className="inline-block bg-gradient-to-r from-[#8B5CF6] via-[#06B6D4] to-[#EC4899] text-[#101014] px-10 py-4 rounded-full text-lg font-semibold hover:scale-105 transition-all duration-300 shadow-[0_0_20px_rgba(139,92,246,0.4)] glow-border">
-              Meet Your Companion
-            </Link>
-            <Link href="/subscription" className="inline-block bg-[#191923] border border-[#06B6D4]/30 text-[#F8FAFC] px-10 py-4 rounded-full text-lg font-semibold hover:bg-[#06B6D4]/10 transition-all duration-300 glow-border-cyan">
-              Subscription & Crypto Plans
+        {/* Featured Characters - VIBRANT CARDS */}
+        <section className="py-20 px-4 bg-[#191923]">
+          <div className="max-w-6xl mx-auto">
+            <h2 className="text-4xl font-bold text-[#F8FAFC] text-center mb-12 drop-shadow-[0_0_12px_rgba(248,250,252,0.5)]">
+              Featured Companions
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {[
+                { name: 'Kenji', origin: 'Japan', style: 'Anime', image: '/images/characters/kenji.png' },
+                { name: 'Sakura', origin: 'Japan', style: 'Anime', image: '/images/characters/sakura.png' },
+                { name: 'Victoria', origin: 'USA', style: 'Realistic', image: '/images/characters/victoria.png' }
+              ].map((char) => (
+                <Link
+                  key={char.name}
+                  href="/characters"
+                  className="group relative block rounded-xl overflow-hidden border border-[#8B5CF6]/30 bg-[#191923] hover:border-[#06B6D4]/50 transition-colors duration-300 glow-border"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#191923]/90 via-[#191923]/40 to-transparent" />
+                  <img
+                    src={char.image}
+                    alt={char.name}
+                    className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="p-5 relative z-10">
+                    <h3 className="text-xl font-bold text-[#F8FAFC] mb-1 drop-shadow-[0_0_8px_rgba(248,250,252,0.5)]">
+                      {char.name}
+                    </h3>
+                    <p className="text-[#F8FAFC]/80 text-sm mb-3">
+                      {char.origin} • {char.style}
+                    </p>
+                    <span className="text-xs bg-[#8B5CF6]/10 text-[#8B5CF6] px-3 py-1 rounded-full border border-[#8B5CF6]/30 glow-border">
+                      International AI Companion
+                    </span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* How It Works */}
+        <section className="py-20 px-4 bg-[#101014]">
+          <div className="max-w-6xl mx-auto">
+            <h2 className="text-4xl font-bold text-[#F8FAFC] text-center mb-12 drop-shadow-[0_0_12px_rgba(248,250,252,0.5)]">
+              How It Works
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+              {[
+                { title: 'Choose', desc: 'Select from USA, Japanese, Korean, or Russian companions. Anime or Realistic styles.' },
+                { title: 'Chat', desc: 'Immersive blue/white formatting. 25 free messages daily (IST/UTC reset).' },
+                { title: 'Learn', desc: 'Stealth learning engine discovers new topics while you roleplay.' }
+              ].map((item, i) => (
+                <div key={i} className="p-8 rounded-xl bg-[#191923]/50 border border-[#06B6D4]/20 hover:border-[#EC4899]/40 transition-colors glow-border-cyan">
+                  <h3 className="text-2xl font-bold text-[#8B5CF6] mb-4">{item.title}</h3>
+                  <p className="text-[#F8FAFC]/90">{item.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Free Daily Quota */}
+        <section className="py-16 px-4 bg-gradient-to-br from-[#191923] via-[#101014] to-[#191923] text-center">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-3xl font-bold text-[#06B6D4] mb-4 drop-shadow-[0_0_10px_rgba(6,182,212,0.5)]">
+              25 Free Messages Every Day
+            </h2>
+            <p className="text-[#F8FAFC]/90 text-lg mb-6">
+              Reset daily at 00:00 IST / UTC. International and Crypto-friendly subscription options available for unlimited access.
+            </p>
+            <Link href="/subscription" className="inline-block bg-[#EC4899] text-[#101014] px-8 py-3 rounded-full font-bold hover:bg-[#EC4899]/80 transition-colors shadow-[0_0_15px_rgba(236,72,153,0.4)]">
+              View Subscription & Crypto Plans
             </Link>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Featured Characters - VIBRANT CARDS */}
-      <section className="py-20 px-4 bg-[#191923]">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16 text-transparent bg-clip-text bg-gradient-to-r from-[#8B5CF6] via-[#06B6D4] to-[#EC4899]">
-            Meet Your Companions
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {[\n              { name: 'Aanya', role: 'College Companion (USA)', color: 'glow-border', img: '/images/characters/aanya-portrait.png' },\n              { name: 'Victoria', role: 'CEO Mentor (USA)', color: 'glow-border-cyan', img: '/images/characters/victoria-portrait.png' },\n              { name: 'Adrian', role: 'Detective (USA)', color: 'glow-border-rose', img: '/images/characters/adrian-portrait.png' },\n              { name: 'Arjun', role: 'Investigator (USA)', color: 'glow-border', img: '/images/characters/arjun-portrait.png' }\n            ].map((char) => (\n              <div key={char.name} className={`bg-[#101014] rounded-3xl overflow-hidden ${char.color} hover:scale-[1.02] transition-all duration-300 group`}>\n                <div className=\"h-64 relative overflow-hidden\">\n                  <Image \n                    src={char.img} \n                    alt={char.name} \n                    fill \n                    className=\"object-cover opacity-70 group-hover:opacity-90 transition-opacity\"\n                  />\n                  <div className=\"absolute inset-0 bg-gradient-to-t from-[#101014]/90 via-[#101014]/20 to-transparent\" />\n                  <div className=\"absolute bottom-4 left-4 right-4 z-10\">\n                    <h3 className=\"text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#8B5CF6] via-[#06B6D4] to-[#EC4899] mb-1\">{char.name}</h3>\n                    <p className=\"text-sm text-[#06B6D4] font-medium\">{char.role}</p>\n                  </div>\n                </div>\n                <div className=\"p-6\">\n                  <p className=\"text-sm text-[#F8FAFC]/80 mb-4\">\n                    Explore unique personality and immersive stories.\n                  </p>\n                  <div className=\"flex flex-wrap gap-2 mb-6\">\n                    <span className=\"text-xs bg-[#8B5CF6]/10 text-[#8B5CF6] px-3 py-1 rounded-full border border-[#8B5CF6]/20\">English</span>\n                    <span className=\"text-xs bg-[#06B6D4]/10 text-[#06B6D4] px-3 py-1 rounded-full border border-[#06B6D4]/20\">Science</span>\n                  </div>\n                  <Link href={`/characters`} className=\"w-full block text-center bg-gradient-to-r from-[#8B5CF6]/20 via-[#06B6D4]/20 to-[#EC4899]/20 text-[#F8FAFC] py-3 rounded-xl hover:bg-gradient-to-r hover:from-[#8B5CF6]/40 hover:via-[#06B6D4]/40 hover:to-[#EC4899]/40 transition-colors font-semibold border border-[#8B5CF6]/30\">\n                    Start Conversation\n                  </Link>\n                </div>\n              </div>\n            ))}\n          </div>\n        </div>\n      </section>\n\n      {/* How It Works */}\n      <section className=\"py-20 px-4\">\n        <div className=\"max-w-6xl mx-auto\">\n          <h2 className=\"text-3xl md:text-4xl font-bold text-center mb-16 text-transparent bg-clip-text bg-gradient-to-r from-[#8B5CF6] via-[#06B6D4] to-[#EC4899]\">\n            How It Works\n          </h2>\n          <div className=\"grid grid-cols-1 md:grid-cols-3 gap-12\">\n            {[\n              { num: '1', title: 'Select Character', desc: 'Choose from International Companions (USA, Japanese, Korean, Russian) or Create Custom.' },\n              { num: '2', title: 'Immersive Chat', desc: 'Natural storytelling with blue narration and white dialogue. Vibrant UI.' },\n              { num: '3', title: 'Stealth Learning', desc: 'Discover vocabulary and knowledge naturally.' }\n            ].map((item, i) => (\n              <div key={i} className=\"text-center group\">\n                <div className=\"w-16 h-16 bg-gradient-to-r from-[#8B5CF6]/20 via-[#06B6D4]/20 to-[#EC4899]/20 rounded-full flex items-center justify-center mx-auto mb-6 text-[#8B5CF6] text-2xl font-bold glow-border\">\n                  {item.num}\n                </div>\n                <h3 className=\"text-xl font-bold mb-3 text-[#F8FAFC]\">{item.title}</h3>\n                <p className=\"text-[#F8FAFC]/80\">{item.desc}</p>\n              </div>\n            ))}\n          </div>\n        </div>\n      </section>\n\n      {/* Free Daily Conversations */}\n      <section className=\"py-20 px-4 bg-[#101014] border-y border-[#06B6D4]/20\">\n        <div className=\"max-w-4xl mx-auto text-center\">\n          <h2 className=\"text-3xl md:text-4xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-[#8B5CF6] via-[#06B6D4] to-[#EC4899]\">\n            25 Free Messages Daily\n          </h2>\n          <p className=\"text-xl text-[#F8FAFC]/80 mb-8\">\n            Enjoy 25 free conversations every day. Your quota resets at midnight IST.\n          </p>\n          <div className=\"bg-[#191923] p-8 rounded-2xl border border-[#06B6D4]/30 glow-border-cyan\">\n            <h3 className=\"text-2xl font-bold text-[#06B6D4] mb-4\">International Design</h3>\n            <p className=\"text-[#F8FAFC]/80\">\n              Optimized for USA, Europe & Crypto-friendly regions. Mobile-first. IST/UTC timezone support. Crypto & International payment options coming soon.\n            </p>\n          </div>\n        </div>\n      </section>\n\n      {/* Footer */}\n      <footer className=\"py-12 px-4 bg-[#191923] text-center text-[#F8FAFC]/60 text-sm\">\n        <div className=\"max-w-6xl mx-auto\">\n          <p className=\"mb-4\">© {new Date().getFullYear()} AI Companion Universe. All rights reserved.</p>\n          <div className=\"flex flex-wrap justify-center gap-6\">\n            <Link href=\"/privacy\" className=\"hover:text-[#8B5CF6] transition-colors\">Privacy Policy</Link>\n            <Link href=\"/terms\" className=\"hover:text-[#8B5CF6] transition-colors\">Terms of Service</Link>\n            <Link href=\"/admin\" className=\"hover:text-[#8B5CF6] transition-colors\">Admin</Link>\n            <Link href=\"/subscription\" className=\"hover:text-[#8B5CF6] transition-colors\">Subscription</Link>\n          </div>\n        </div>\n      </footer>\n    </main>\n  )\n}\n
+        {/* Footer */}
+        <footer className="bg-[#101014] border-t border-[#06B6D4]/20 p-8 text-[#F8FAFC]/60 text-center text-sm">
+          <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <p>© 2026 AI Companion Universe. International Market (USA, Europe, Crypto-Friendly)</p>
+            <div className="flex gap-6">
+              <Link href="/privacy" className="hover:text-[#8B5CF6] transition-colors">Privacy</Link>
+              <Link href="/terms" className="hover:text-[#06B6D4] transition-colors">Terms</Link>
+              <Link href="/subscription" className="hover:text-[#EC4899] transition-colors">Crypto & International Plans</Link>
+            </div>
+          </div>
+        </footer>
+      </main>
+    </>
+  )
+}

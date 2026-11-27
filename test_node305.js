@@ -1,0 +1,9 @@
+const fs = require('fs');
+const content = fs.readFileSync('src/app/characters/page.tsx', 'utf8');
+const lines = content.split('\n');
+console.log('Line 87:', JSON.stringify(lines[86]));
+console.log('Line 88:', JSON.stringify(lines[87]));
+console.log('Line 89:', JSON.stringify(lines[88]));
+console.log('Line 90:', JSON.stringify(lines[89]));
+console.log('Line 91:', JSON.stringify(lines[90]));
+console.log('Line 92:', JSON.stringify(lines[91]));
